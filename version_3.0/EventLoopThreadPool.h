@@ -1,24 +1,21 @@
-//Header file for EventLoopThreadPool
-//1.启动线程池
-//2.获取下一个eventloop
-
+#include "EventLoop.h"
 #include "EventLoopThread.h"
-#include <memory>
 #include <vector>
-using namespace std;
+
+using std::vector;
 
 class EventLoopThreadPool
 {
+private:
+    int num_threads_;
+    bool started_;
+    bool quit_;
+    vector<EventLoop*> loops_;
+    vector<EventLoopThread> threads_;
 public:
-    EventLoopThreadPool(EventLoop* base_loop_, int thread_num);
+    EventLoopThreadPool(int num_threads);
     ~EventLoopThreadPool();
     void start_pool();
-    EventLoop* get_next_eventLoop();
-private:
-    EventLoop* base_loop;
-    bool started_;
-    int num_threads;
-    int next_;
-    vector<EventLoopThread> eventloopthread_pool;
-    vector<EventLoop*> loops_;
+    EventLoop* get_next_loop();
+    
 };

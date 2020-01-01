@@ -1,43 +1,29 @@
-//Header file for channel
-//function:
-//1.管理对应的fd
-//2.设置读写控制器供Msgdata初始化时调用
-//3.事件分配器
 
-#include "EventLoop.h"
-#include <memory>
 #include <functional>
+#include <memory>
 
-class EventLoop;
-class Msgdata;
+using std::function;
+using std::shared_ptr;
+using std::weak_ptr;
 
+typedef function<void()> CALLBACK; 
 class Channel
 {
-public:
-    typedef std::function<void()> CALLBACK;
-    typedef std::shared_ptr<EventLoop> SP_EventLoop;
-    Channel(SP_EventLoop loop, int connfd);
-    Channel(SP_EventLoop loop);
-    ~Channel();
-    int get_fd();
-    void set_fd();
-    void set_holder(shared_ptr<Msgdata> message);
-    shared_ptr<Msgdata> get_holder();
-
-    void set_readhandler();
-    void set_writehandler();
-    void set_connhandler();
-    void set_errorhandler();
-
-    void handle_events();
-    
 private:
     int connfd_;
+    EventLoop* loop_;
+    weak_ptr<Client> holder_;
 
-    void handle_read();
-    void handle_write();
-    void handle_conn();
-    CALLBACK read_handler_;
-    CALLBACK write_handler_;
-    CALLBACK 
+    CALLBACK&& read_handler_;
+    CALLBACK&& write_handler_;
+    CALLBACK&& conn_handler_;
+
+public:
+    Channel(EventLoop* loop, int connfd);
+    ~Channel();
+    void set_holder(shared_ptr<Client> holder);
+    void set_readhandler(CALLBACK&& read_handler);
+    void set_writehandler(CALLBACK&& write_handler);
+    void set_connhandler(CALLBACK&& conn_handler);
+    
 };

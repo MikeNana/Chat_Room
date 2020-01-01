@@ -1,57 +1,42 @@
-//Header file for eventloop
-//1.开始loop
-//2.优雅关闭连接而不是简单地close
-//3.将任务放在eventloop中，并执行
-#include "Timer.h"
+
+#include "Epoll.h"
 #include <functional>
-#include <memory>
-#include <vector>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
-using std::vector;
-using std::shared_ptr;
 using std::function;
+using std::queue;
+using std::mutex;
+using std::condition_variable;
 
-class Timer_Manager;
-class Channel;
+typedef function<void()> functor;
 
 class EventLoop
 {
+private:
+    Epoller poller_;
+//暂定用queue来作为任务队列
+    queue<functor> pending_functors_;
+    std::thread::id thread_id_;
+    mutex mtx;
+    condition_variable cv_;
 
 public:
-    typedef function<void()> functor;
-    typedef shared_ptr<Channel> SP_Channel;
     EventLoop();
     ~EventLoop();
-    
-    void loop();
-    void quit();
-
-    void run_in_loop();
-    void queue_in_loop();
-    bool is_in_loop();
+    void start_loop();
     void assert_in_loop();
+    bool is_in_loop();
 
-    void shutdown(SP_Channel channel);
+    void queue_in_loop(functor&& cb);
+    void run_in_loop(functor&& cb);
 
-    void remove_from_poller(SP_Channel channel);
-    void update_poller(SP_Channel channel, int timeout);
-    void add_poller(SP_Channel channel, int timeout);
+    void do_pending_functors();
 
-private:     
-    bool loop_;
-    bool quit_;
-    bool event_handling_;
-    bool calling_pending_functors_;
-
-    int wakeup_fd_;
-    const pid_t thread_id_;
-
-    vector<functor> pending_functors_;
-    shared_ptr<Channel> channel_;
-    shared_ptr<Epoller> poller_;
-
-    void wakeup();
-    void handle_read();
-    void handle_conn();
-    void do_pending_functors_();
+    void handle_newconn();
+    void handle_curconn();
+//参数未定，可能是shared_ptr<Channel>
+    void grace_shutdown();
 };
