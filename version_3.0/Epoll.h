@@ -1,4 +1,11 @@
+//轮询器
 
+
+#ifndef _Epoll_H_
+#define _Epoll_H_
+
+#include "Channel.h"
+#include "Client.h"
 #include "Timer.h"
 #include <vector>
 #include <memory>
@@ -6,6 +13,8 @@
 
 using std::vector;
 static const int MAXFDS = 1000;
+
+class EventLoop;
 
 class Epoller
 {
@@ -15,16 +24,21 @@ private:
     Timer_Manager timer_manager_;
     shared_ptr<Client> fd_client[MAXFDS];
     shared_ptr<Channel> fd_channel[MAXFDS];
-
+    vector<epoll_event> ready_events;
 public:
-    Epoller(EventLoop* loop);
-    ~Epoller();
+    Epoller();
+    ~Epoller(){}
 
-    void epoll_add(shared_ptr<Client> client_, int timeout);
-    void epoll_mod(shared_ptr<Client> client_, int timeout);
-    void epoll_del(shared_ptr<Client> client_);
-    void add_timer();
+    void epoll_add(shared_ptr<Channel> channel_, int timeout);
+    void epoll_mod(shared_ptr<Channel> channel_, int timeout);
+    void epoll_del(shared_ptr<Channel> channel_);
+    void add_timer(shared_ptr<Channel> channel_, int timeout);
     void handle_expired_events();
-    vector<epoll_event> poll();
-    vector<epoll_event> get_ready_events();
+
+    int get_epoll_fd_();
+
+    vector<shared_ptr<Channel>> poll();
+    vector<shared_ptr<Channel>> get_ready_events(int ready_channel_num);
 };
+
+#endif

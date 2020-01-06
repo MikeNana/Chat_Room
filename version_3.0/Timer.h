@@ -1,3 +1,9 @@
+//定时器头文件
+//内含定时器节点/定时器管理器两个类；每个连接会有一个对应的定时器节点，由管理器管理
+//管理器的容器选择优先队列，如果超时则抛弃
+
+#ifndef _Timer_H_
+#define _Timer_H_
 
 #include "Client.h"
 #include <memory>
@@ -6,13 +12,15 @@
 using std::priority_queue;
 using std::shared_ptr;
 
+class Client;
+
 class TimerNode
 {
 private:
     int expired_time_;
     shared_ptr<Client> client_;
 public:
-    TimerNode(shared_ptr<Client> client, int timeout);
+    explicit TimerNode(shared_ptr<Client> client, int timeout);
     ~TimerNode();
     int get_expired_time();
 };
@@ -32,6 +40,8 @@ private:
 public:
     Timer_Manager();
     ~Timer_Manager();
-    void add_timer(shared_ptr<Client> client, int connfd);
+    void add_timer(shared_ptr<Client> client, int timeout);
     void handle_expired_events();
 };
+
+#endif
