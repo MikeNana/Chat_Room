@@ -1,4 +1,5 @@
 #include "Channel.h"
+#include "Helper.h"
 #include <functional>
 #include <sys/epoll.h>
 #include <memory>
@@ -38,42 +39,50 @@ void Channel::handle_event()
 {
 //因为是ET触发，所以需要将events置0
     events_ = 0;
-    if((revents_ & EPOLLHUP) && (revents_ & EPOLLIN))
+//如果对端正常关闭(程序里close(),shell下kill或ctrl+c)
+    if((revents_ & EPOLLRDHUP) && (revents_ & EPOLLIN))
     {
-        events_ = 0;
-        return;
+        cout << "client exited." << endl;
+        if(conn_handler_)
+        {
+            conn_handler_();
+            return;
+        }
     }
+//如果对端有数据可读，正常发送数据(包括带外数据)
     if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLHUP))
     {
         if(read_handler_)
         {
             cout << "reading..." << endl;
             read_handler_();
+            return;
         }
-            
     }
+//如果有数据要写
     if(revents_& EPOLLOUT)
     {
         if(write_handler_)
         {
             cout << "writing..." << endl;
             write_handler_();
+            return;
         }
+    }
+//如果是服务器端出错，注意EPOLLERR是在服务器端向已经关闭的socket写数据时才会触发的
+    if((revents_ & EPOLLERR) || (revents_ & EPOLLHUP))
+    {
+        cout << "server error occured." << endl;
+        return;
     }
     else 
     {
+        cout << "other situation" << endl;
+        system("pause");
         if(conn_handler_)
             conn_handler_();
     }
 }
 
-void Channel::set_readhandler(CALLBACK&& read_handler)
-{
-    read_handler_ = read_handler;
-}
 
-void Channel::set_writehandler(CALLBACK&& write_handler)
-{
-    write_handler_ = write_handler;
-}
 

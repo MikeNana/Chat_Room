@@ -53,7 +53,7 @@ public:
     void do_pending_functors();
 
     void handle_newconn(shared_ptr<Channel> channel_, int timeout);
-    void handle_curconn();
+    void handle_curconn(shared_ptr<Channel> channel_);
 //参数未定，可能是shared_ptr<Channel>
     void grace_shutdown();
 

@@ -5,7 +5,10 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/local/include/boost_1_71_0",
-                "/usr/local/lib/boost_1_71_0"
+                "/usr/local/lib/boost_1_71_0",
+                "/usr/include/mysql",
+                "/usr/include/mysql++",
+                "/usr/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

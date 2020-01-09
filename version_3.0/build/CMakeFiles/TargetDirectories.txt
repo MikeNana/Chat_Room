@@ -1,3 +1,0 @@
-/mnt/c/Users/admin/Desktop/From_ubuntu/Chat_Room/version_3.0/build/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/admin/Desktop/From_ubuntu/Chat_Room/version_3.0/build/CMakeFiles/chat_room.dir
-/mnt/c/Users/admin/Desktop/From_ubuntu/Chat_Room/version_3.0/build/CMakeFiles/edit_cache.dir

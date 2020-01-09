@@ -15,7 +15,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-static const int port = 8000;
+static const int port = 7999;
 static const int MAXFDS = 10000;
 static const int MAX_BUFF = 1000;
 
@@ -28,7 +28,7 @@ void handle_error(const string& str)
 int socket_and_bind()
 {
     int listenfd = 0;
-    if((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if((listenfd = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
     handle_error("socket failed");
 
     struct sockaddr_in serv_addr;
@@ -76,7 +76,7 @@ ssize_t read_str(int fd, std::string &inBuffer, bool &zero)
   return readSum;
 }
 
-ssize_t write_str(int fd, std::string &sbuff) {
+ssize_t write_str(int fd, std::string& sbuff) {
   size_t nleft = sbuff.size();
   ssize_t nwritten = 0;
   ssize_t writeSum = 0;
@@ -98,7 +98,8 @@ ssize_t write_str(int fd, std::string &sbuff) {
     ptr += nwritten;
   }
   if (writeSum == static_cast<int>(sbuff.size()))
-    sbuff.clear();
+    //sbuff.clear();
+    ;
   else
     sbuff = sbuff.substr(writeSum);
   return writeSum;
@@ -116,7 +117,7 @@ int set_non_block(int fd)
   return 0;
 }
 
-void handle_for_sigpipe()
+void handle_for_signal()
 {
   struct sigaction sa;
   memset(&sa, '\0', sizeof(sa));

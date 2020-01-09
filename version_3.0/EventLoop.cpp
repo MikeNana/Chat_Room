@@ -9,7 +9,7 @@
 #include <thread>
 #include <memory>
 #include <set>
-
+#include <unistd.h>
 using std::unique_lock;
 using std::cout;
 using std::endl;
@@ -35,7 +35,7 @@ void EventLoop::start_loop()
 {
     assert(is_in_loop());
     assert(!looping_);
-    handle_for_sigpipe();
+    handle_for_signal();
     vector<shared_ptr<Channel>> ret;
     looping_ = true;
     quit_ = false;
@@ -44,22 +44,25 @@ void EventLoop::start_loop()
 
     while(!quit_)
     {
+        handle_for_signal();
+        cout << get_epollfd_() << endl;
         ret.clear();
         ret = poller_->poll();
 
         //cout << "断点" << endl;
  
-        //cout << ret.size() << endl;
+        cout << ret.size() << endl;
 
         for(auto& it : ret)
             it->handle_event();
         do_pending_functors();
         for(auto a : link_pool)
+        {
+            cout << a << endl;
             write_str(a, buffer_);
+        }
         buffer_.clear();
         poller_->handle_expired_events();
-
-        handle_for_sigpipe();
     }
 
     looping_ = false;
@@ -96,6 +99,7 @@ void EventLoop::run_in_loop(functor&& cb)
 
 void EventLoop::do_pending_functors()
 {
+
 //使用交换对象所有权的方法来减少临界区大小
     queue<functor> functors;
     {
@@ -105,6 +109,8 @@ void EventLoop::do_pending_functors()
 //执行队列中所有的任务
     while(!functors.empty())
     {
+        cout << "doing in" << endl;
+        
         functors.front()();
         functors.pop();
     }
@@ -114,4 +120,14 @@ void EventLoop::do_pending_functors()
 void EventLoop::handle_newconn(shared_ptr<Channel> channel_, int timeout)
 {
     poller_->epoll_add(channel_, timeout);
+}
+
+
+void EventLoop::handle_curconn(shared_ptr<Channel> channel_)
+{
+    {
+        unique_lock<mutex> lck(mtx_);
+        link_pool.erase(channel_->get_fd());
+    }
+    close(channel_->get_fd());
 }

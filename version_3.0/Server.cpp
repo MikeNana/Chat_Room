@@ -83,13 +83,15 @@ void Server::handle_newconn()
             cout << "set listen_fd failed " << endl;
             return;
         }
+        /*
         for(auto a : link_pool)
             cout << a << endl;
-        shared_ptr<Client> new_cli(new Client(server_loop_, accept_fd_));
+        */
+        shared_ptr<Client> new_cli(new Client(cur_loop, accept_fd_));
         new_cli->get_channel()->set_holder(new_cli);
         server_loop_->queue_in_loop(bind(&Client::new_conn, new_cli));
         set_non_block(accept_fd_);
-        cout << "new connection links eventloop" << endl;
+        cout << "new connection links eventloop " << new_cli->get_loop()->get_epollfd_() << endl;
     }
 //因为是ET模式，所以需要将accept_channel重新置位
     accept_channel_->set_events(EPOLLIN | EPOLLET);

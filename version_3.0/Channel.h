@@ -38,12 +38,13 @@ public:
     int get_fd(){ return connfd_; }
     shared_ptr<Client> get_holder();
     int get_events(){ return events_; }
-
+    int get_revents(){ return revents_; }
     void set_events(int events){ events_ = events; }
     void set_revents(int revents){ revents_ = revents; }
     void handle_event();
-    void set_readhandler(CALLBACK&& read_handler);
-    void set_writehandler(CALLBACK&& write_handler);
+    void set_readhandler(CALLBACK&& read_handler){ read_handler_ = read_handler; }
+    void set_writehandler(CALLBACK&& write_handler){ write_handler_ = write_handler; }
+    void set_connhandler(CALLBACK&& conn_handler){ conn_handler_ = conn_handler; }
     //void set_connhandler(CALLBACK&& conn_handler);
 
     void set_fd(int connfd){ connfd_ = connfd; }

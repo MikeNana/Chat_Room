@@ -1,13 +1,14 @@
 #include "Epoll.h"
 #include <iostream>
+#include <cstdlib>
 
 using std::cout;
 using std::endl;
 
 
 const int MAX_EVENTS = 1000;
-const int DEFAULT_EVENT = EPOLLIN | EPOLLHUP | EPOLLPRI;
-const int EPOLL_WAIT_TIME = 10000;
+const int DEFAULT_EVENT = EPOLLIN | EPOLLHUP | EPOLLPRI | EPOLLRDHUP;
+const int EPOLL_WAIT_TIME = 100000;
 
 Epoller::Epoller()
     :
@@ -89,6 +90,8 @@ vector<shared_ptr<Channel>> Epoller::poll()
 {
     while(true)
     {
+        cout << "enter poll" << endl;
+
         int ready_channel_num = epoll_wait(epoll_fd_, &*ready_events.begin(), ready_events.size(), EPOLL_WAIT_TIME);
         vector<shared_ptr<Channel>> req_channel = get_ready_events(ready_channel_num);
         if(!req_channel.empty())
@@ -117,5 +120,9 @@ vector<shared_ptr<Channel>> Epoller::get_ready_events(int ready_channel_num)
             cout << "wrong ready channel" << endl;
         }
     }
+
+    ready_events.clear();
+    ready_events.resize(1000);
+
     return req_channel;
 }

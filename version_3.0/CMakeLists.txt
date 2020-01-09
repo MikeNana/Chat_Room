@@ -1,5 +1,5 @@
 PROJECT(CHAT_ROOM CXX)
 set(CMAKE_CXX_FLAG "-Wall")
 SET(SRC_LIST main.cpp Channel.cpp Client.cpp Epoll.cpp EventLoop.cpp EventLoopThread.cpp EventLoopThreadPool.cpp Helper.cpp Server.cpp Timer.cpp)
-ADD_EXECUTABLE(chat_room ${SRC_LIST})
-TARGET_LINK_LIBRARIES(chat_room pthread)
+ADD_EXECUTABLE(Pub_Sub ${SRC_LIST})
+TARGET_LINK_LIBRARIES(Pub_Sub pthread)

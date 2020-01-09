@@ -42,6 +42,7 @@ private:
     weak_ptr<TimerNode> timer_;
     void handle_read();
     void handle_write();
+    void handle_conn();
 };
 
 #endif
