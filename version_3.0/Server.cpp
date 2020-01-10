@@ -89,6 +89,7 @@ void Server::handle_newconn()
         */
         shared_ptr<Client> new_cli(new Client(cur_loop, accept_fd_));
         new_cli->get_channel()->set_holder(new_cli);
+//此处应该是server_loop_调用queue_in_loop，如果是cur_loop调用会出错
         server_loop_->queue_in_loop(bind(&Client::new_conn, new_cli));
         set_non_block(accept_fd_);
         cout << "new connection links eventloop " << new_cli->get_loop()->get_epollfd_() << endl;
