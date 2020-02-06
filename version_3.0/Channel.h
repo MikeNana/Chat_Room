@@ -8,10 +8,13 @@
 #include "Client.h"
 #include <functional>
 #include <memory>
+#include <iostream>
 
 using std::function;
 using std::shared_ptr;
 using std::weak_ptr;
+using std::cout;
+using std::endl;
 
 class EventLoop;
 class Client;
@@ -48,7 +51,7 @@ public:
     //void set_connhandler(CALLBACK&& conn_handler);
 
     void set_fd(int connfd){ connfd_ = connfd; }
-    void set_holder(shared_ptr<Client> holder){ holder_ = holder; }
+    void set_holder(shared_ptr<Client> holder){ holder_ = holder; cout << "set holder done" << endl; }
 };
 
 #endif

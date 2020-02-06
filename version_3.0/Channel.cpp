@@ -33,6 +33,10 @@ shared_ptr<Client> Channel::get_holder()
         shared_ptr<Client> ret(holder_.lock());
         return ret;
     }
+    else 
+    {
+        cout << "holder_ is nullptr" << endl;
+    }
     return nullptr;
 }
 void Channel::handle_event()
@@ -52,6 +56,8 @@ void Channel::handle_event()
 //如果对端有数据可读，正常发送数据(包括带外数据)
     if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLHUP))
     {
+//此时holder_还没有被初始化，如果调用get_holder会导致段错误
+//shared_ptr<Client> holder = get_holder();
         if(read_handler_)
         {
             cout << "reading..." << endl;
@@ -59,6 +65,17 @@ void Channel::handle_event()
             return;
         }
     }
+    /*
+    if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLHUP))
+    {
+        if(read_handler_)
+        {
+            cout << "reading..." << endl;
+            read_handler_();
+            return;
+        }
+    }
+    */
 //如果有数据要写
     if(revents_& EPOLLOUT)
     {

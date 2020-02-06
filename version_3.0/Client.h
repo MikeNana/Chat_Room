@@ -19,6 +19,18 @@ class EventLoop;
 class Channel;
 class TimerNode;
 
+enum Connection_state
+{
+    STATE_INIT = 1,
+    STATE_RECV_CHOICE,
+    STATE_LOGIN,
+    STATE_MODIFY1,
+    STATE_MODIFY2,
+    STATE_REGISTER,
+    STATE_FINISH,
+    STATE_WRONG
+};
+
 typedef shared_ptr<Channel> SP_Channel;
 
 class Client
@@ -26,20 +38,23 @@ class Client
 public:
     Client(EventLoop* loop, int connfd);
     ~Client();
-    int get_fd() {return connfd_; }
+    int get_fd_() {return connfd_; }
     SP_Channel get_channel() { return channel_; }
     EventLoop* get_loop() { return loop_; }
     void link_timer(shared_ptr<TimerNode>& timer){ timer_ = timer; }
     void seperate_timer();
     void new_conn();
+    Connection_state get_state(){ return conn_state; }
 private:
     int connfd_;
     string in_buffer_;
     string out_buffer_;
     shared_ptr<Channel> channel_;
     EventLoop* loop_;
-    
+    Connection_state conn_state;
     weak_ptr<TimerNode> timer_;
+    int Login();
+    int modify();
     void handle_read();
     void handle_write();
     void handle_conn();

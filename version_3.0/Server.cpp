@@ -1,4 +1,3 @@
-
 #include "Server.h"
 #include "Helper.h"
 #include "EventLoop.h"
@@ -77,7 +76,7 @@ void Server::handle_newconn()
     {
 //首先取出线程池中的下一个EventLoop
         EventLoop* cur_loop = thread_pool_->get_next_loop();
-        link_pool.insert(accept_fd_);
+        //link_pool.insert(accept_fd_);
         if(set_non_block(listen_fd_) < 0)
         {
             cout << "set listen_fd failed " << endl;

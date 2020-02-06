@@ -6,9 +6,11 @@
                 "${workspaceFolder}/**",
                 "/usr/local/include/boost_1_71_0",
                 "/usr/local/lib/boost_1_71_0",
+                "/usr/bin/mysql",
+                "/usr/lib/mysql",
                 "/usr/include/mysql",
                 "/usr/include/mysql++",
-                "/usr/include"
+                "/usr/share/mysql"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

@@ -46,12 +46,13 @@ int socket_and_bind()
     return listenfd;
 }
 
-ssize_t read_str(int fd, std::string &inBuffer, bool &zero) 
+ssize_t read_str(int fd, std::string &inBuffer, bool &zero, int& length) 
 {
   ssize_t nread = 0;
   ssize_t readSum = 0;
   while (true) {
     char buff[MAX_BUFF];
+    //cout << strlen(buff) << endl;
     if ((nread = read(fd, buff, MAX_BUFF)) < 0) {
       if (errno == EINTR)
         continue;
@@ -66,11 +67,15 @@ ssize_t read_str(int fd, std::string &inBuffer, bool &zero)
       zero = true;
       break;
     }
+//表示没读到任何内容
+    length += strlen(buff);
+    if(length == 0)
+        break;
     // printf("before inBuffer.size() = %d\n", inBuffer.size());
     // printf("nread = %d\n", nread);
     readSum += nread;
     // buff += nread;
-    inBuffer += std::string(buff, buff + nread);
+    inBuffer += std::string(buff, buff + length);
     // printf("after inBuffer.size() = %d\n", inBuffer.size());
   }
   return readSum;

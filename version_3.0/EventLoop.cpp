@@ -56,11 +56,12 @@ void EventLoop::start_loop()
         for(auto& it : ret)
             it->handle_event();
         do_pending_functors();
-        for(auto a : link_pool)
-        {
-            cout << a << endl;
-            write_str(a, buffer_);
-        }
+        if(!buffer_.empty())
+            for(auto a : link_pool)
+            {
+                cout << a << endl;
+                write_str(a, buffer_);
+            }
         buffer_.clear();
         poller_->handle_expired_events();
     }

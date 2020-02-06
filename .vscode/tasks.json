@@ -7,8 +7,12 @@
             "command": "g++",
             "args":[
                 "-g","-o","main","-I/usr/include/boost_1_71_0",
-                "-L/usr/local/lib/boost_1_71_0","-std=c++11",
-                "main.cpp","-lboost_thread","-lpthread"
+                "-L/usr/local/lib/boost_1_71_0",
+                "-I/usr/include/mysql",
+                "-I/usr/include/mysql++",
+                "-L/usr/lib/mysql",
+                "-std=c++11",
+                "main.cpp","-lboost_thread","-lpthread","-lmysqlpp"
             ],
             "group": {
                 "kind": "build",
